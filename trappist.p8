@@ -22,7 +22,7 @@ planets.h.dist=0.063
 rtc=0
 zoom=100
 speed=8
-offy=0.9
+offy=0.8
 
 function _init()
 
@@ -34,12 +34,21 @@ function _update()
  
 end
 
+function draw_star()
+	circfill(cx,cy,5,8)
+end
+
 function draw_planet(letra,dist)
  local ld=dist*1000
  local c=(1/dist)/(500*speed)
  local t=(rtc*c)%100
  --print(t)
- circfill(cx+ld*sin(t),cy+ld*cos(t)*offy,3,4)
+ if cos(t)>0 or
+ 			(ld*sin(t)<-6 or 
+ 				ld*sin(t)>6)
+ then 
+  circfill(cx+ld*sin(t),cy+ld*cos(t)*offy,3,4)
+ end
 end
 
 function draw_orbit(letra,dist)
@@ -55,6 +64,7 @@ function _draw()
   for k,v in pairs(planets) do
     draw_orbit(k,v.dist)
   end
+  draw_star()
   for k,v in pairs(planets) do
     draw_planet(k,v.dist)
   end
