@@ -19,10 +19,10 @@ planets.f.dist=0.037
 planets.g.dist=0.045
 planets.h.dist=0.063 
 
-rtc=0
+rtc=60
 zoom=100
 speed=8
-offy=0.2
+offy=0.1
 
 function _init()
 
@@ -32,6 +32,18 @@ end
 function _update()
  rtc=rtc+1
  
+ if btn(2) then
+   offy+=0.1
+   if offy>1 then 
+   		offy=1
+   end
+ end
+ if btn(3) then
+   offy-=0.1
+   if offy<-1 then 
+     offy=-1
+   end
+ end
 end
 
 function draw_star()
@@ -43,10 +55,10 @@ function draw_planet(letra,dist,side)
  local c=(1/dist)/(500*speed)
  local t=(rtc*c)%100
 
- if ((side==1) and (cos(t)>=0)) then 
+ if (side==1) and cos(t)>=0 
+ then 
   circfill(cx+ld*sin(t),cy+ld*cos(t)*offy,3,4)
  end
-
  if (side==-1) and (cos(t)<0)
  then 
   circfill(cx+ld*sin(t),cy+ld*cos(t)*offy,3,4)
@@ -68,15 +80,14 @@ function draw_orbit(letra,dist,side)
     pset(cx+ld*sin(c/100),cy+ld*cos(c/100)*offy,1)
    end
  end
- 
- 
 end
 
 function _draw()
   cls()
+  print(offy,0,0)
   for k,v in pairs(planets) do
-    draw_planet(k,v.dist,-1)
     draw_orbit(k,v.dist,-1)
+    draw_planet(k,v.dist,-1)
   end
 draw_star()
   for k,v in pairs(planets) do
