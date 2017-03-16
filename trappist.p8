@@ -22,7 +22,7 @@ planets.h.dist=0.063
 rtc=0
 zoom=100
 speed=8
-offy=0.8
+offy=0.2
 
 function _init()
 
@@ -38,35 +38,50 @@ function draw_star()
 	circfill(cx,cy,5,8)
 end
 
-function draw_planet(letra,dist)
+function draw_planet(letra,dist,side)
  local ld=dist*1000
  local c=(1/dist)/(500*speed)
  local t=(rtc*c)%100
- --print(t)
- if cos(t)>0 or
- 			(ld*sin(t)<-6 or 
- 				ld*sin(t)>6)
+
+ if ((side==1) and (cos(t)>=0)) then 
+  circfill(cx+ld*sin(t),cy+ld*cos(t)*offy,3,4)
+ end
+
+ if (side==-1) and (cos(t)<0)
  then 
   circfill(cx+ld*sin(t),cy+ld*cos(t)*offy,3,4)
  end
 end
 
-function draw_orbit(letra,dist)
+function draw_orbit(letra,dist,side)
  local ld=dist*1000
  local c
- for c=1,100,2 do
-  pset(cx+ld*sin(c/100),cy+ld*cos(c/100)*offy,1)
+ local r
+ if (side==-1)
+ then
+   for c=25,75,2 do
+    pset(cx+ld*sin(c/100),cy+ld*cos(c/100)*offy,1)
+   end
+ else
+   for c=75,125,2 do
+   	r=c%100
+    pset(cx+ld*sin(c/100),cy+ld*cos(c/100)*offy,1)
+   end
  end
+ 
+ 
 end
 
 function _draw()
   cls()
   for k,v in pairs(planets) do
-    draw_orbit(k,v.dist)
+    draw_planet(k,v.dist,-1)
+    draw_orbit(k,v.dist,-1)
   end
-  draw_star()
+draw_star()
   for k,v in pairs(planets) do
-    draw_planet(k,v.dist)
+  		draw_orbit(k,v.dist,1)
+    draw_planet(k,v.dist,1)
   end
 end	
 __gfx__
