@@ -20,8 +20,8 @@ planets.g.dist=0.045
 planets.h.dist=0.063 
 
 rtc=60    --real time clock
-zoom=9
 speed=8
+zoom=9
 offy=0.07
 star_radius=5
 bright=100
@@ -29,7 +29,7 @@ bright_log={}
 
 function _init()
 	 local i
-  for i=1,1000 do
+  for i=1,100 do
     bright_log[i]=bright
   end
 end
@@ -37,16 +37,16 @@ end
 function _update()
  rtc=rtc+1
  log_bright(get_brightness())
- if btn(0) then
-   zoom+=1
-   if zoom>9 then
-     zoom=9
+ if btnp(0) then
+   speed+=1
+   if speed>9 then
+     speed=9
    end
  end
- if btn(1) then
-   zoom-=1
-   if zoom<1 then
-     zoom=1
+ if btnp(1) then
+   speed-=1
+   if speed<1 then
+     speed=1
    end
  end 
  if btn(3) then
@@ -69,10 +69,10 @@ end
 
 function log_bright(b)
   local i
-  for i=1,999 do
+  for i=1,99 do
     bright_log[i]=bright_log[i+1]
   end
-  bright_log[1000]=b
+  bright_log[100]=b
 end
 
 function get_brightness()
@@ -95,16 +95,12 @@ end
 
 function draw_bright_log()
   local py=10
-  --900 -> 1000 : 1
-  --800 -> 1000 : 2
-  local lzoom=zoom*100
-  local lstep=10-zoom
-  print("x"..zoom+1,12,4,7)
+  print("x"..10-speed,12,4,7)
   rectfill(12,py,116,py+12,0)
   rect(12,py,116,py+12,7)
   local i
-  for i=lzoom,1000 do
-    pset(13+i-lzoom+1,py+2+(10-bright_log[i]/10),11)
+  for i=1,100 do
+    pset(13+i,py+2+(10-bright_log[i]/10),11)
   end
 end
 
