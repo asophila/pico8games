@@ -9,7 +9,7 @@ cy=64
 
 planets={b={},c={},d={},e={},f={},g={},h={}}
 for p in all(planets) do
- add(p,{x=64,y=64,temp=0,dist=0})
+ add(p,{temp=0,dist=0})
 end
 planets.b.dist=0.011
 planets.c.dist=0.015
@@ -19,26 +19,43 @@ planets.f.dist=0.037
 planets.g.dist=0.045
 planets.h.dist=0.063 
 
-rtc=60
-zoom=100
+rtc=60    --real time clock
+zoom=9
 speed=8
-offy=0.1
+offy=0.07
+star_radius=5
+bright=100
+bright_log={}
 
 function _init()
-
+	 local i
+  for i=1,1000 do
+    bright_log[i]=bright
+  end
 end
-
 
 function _update()
  rtc=rtc+1
- 
- if btn(2) then
+ log_bright(get_brightness())
+ if btn(0) then
+   zoom+=1
+   if zoom>9 then
+     zoom=9
+   end
+ end
+ if btn(1) then
+   zoom-=1
+   if zoom<1 then
+     zoom=1
+   end
+ end 
+ if btn(3) then
    offy+=0.1
    if offy>1 then 
    		offy=1
    end
  end
- if btn(3) then
+ if btn(2) then
    offy-=0.1
    if offy<-1 then 
      offy=-1
@@ -46,8 +63,53 @@ function _update()
  end
 end
 
+function _draw()
+ draw_system()
+end
+
+function log_bright(b)
+  local i
+  for i=1,999 do
+    bright_log[i]=bright_log[i+1]
+  end
+  bright_log[1000]=b
+end
+
+function get_brightness()
+ local shadow
+ local c
+ local t
+ local ld
+ local adj_bright=bright
+ 
+ for k,v in pairs(planets) do
+   c=(1/v.dist)/(500*speed)
+   t=(rtc*c)%100
+   ld=v.dist*1000
+   if cos(t)>0 and abs(sin(t)*ld)<star_radius then
+     adj_bright-=10 --planet_radius
+   end
+ end
+ return adj_bright
+end
+
+function draw_bright_log()
+  local py=10
+  --900 -> 1000 : 1
+  --800 -> 1000 : 2
+  local lzoom=zoom*100
+  local lstep=10-zoom
+  print("x"..zoom+1,12,4,7)
+  rectfill(12,py,116,py+12,0)
+  rect(12,py,116,py+12,7)
+  local i
+  for i=lzoom,1000 do
+    pset(13+i-lzoom+1,py+2+(10-bright_log[i]/10),11)
+  end
+end
+
 function draw_star()
-	circfill(cx,cy,5,8)
+	circfill(cx,cy,star_radius,8)
 end
 
 function draw_planet(letra,dist,side)
@@ -82,9 +144,10 @@ function draw_orbit(letra,dist,side)
  end
 end
 
-function _draw()
+function draw_system()
   cls()
-  print(offy,0,0)
+  --print(offy,0,0)
+  --print(get_brightness(),0,8)
   for k,v in pairs(planets) do
     draw_orbit(k,v.dist,-1)
     draw_planet(k,v.dist,-1)
@@ -94,7 +157,10 @@ draw_star()
   		draw_orbit(k,v.dist,1)
     draw_planet(k,v.dist,1)
   end
+  draw_bright_log()
 end	
+
+
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0000000000bbbb000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
