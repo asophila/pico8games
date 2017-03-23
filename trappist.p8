@@ -27,6 +27,8 @@ star_radius=5
 bright=100
 bright_log={}
 
+pause=false
+
 function _init()
 	 local i
   for i=1,100 do
@@ -35,31 +37,41 @@ function _init()
 end
 
 function _update()
- rtc=rtc+1
- log_bright(get_brightness())
+ if not pause then
+   rtc=rtc+1
+   log_bright(get_brightness())
+ end
+ 
  if btnp(0) then
    speed+=1
    if speed>9 then
      speed=9
    end
  end
+ 
  if btnp(1) then
    speed-=1
    if speed<1 then
      speed=1
    end
  end 
+ 
  if btn(3) then
    offy+=0.1
    if offy>1 then 
    		offy=1
    end
  end
+ 
  if btn(2) then
    offy-=0.1
    if offy<-1 then 
      offy=-1
    end
+ end
+ 
+ if btnp(5) then
+   pause= not pause
  end
 end
 
