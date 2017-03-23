@@ -116,6 +116,11 @@ function draw_bright_log()
   end
 end
 
+function draw_ruler()
+  local py=10
+  line(ruler_x,py+3,ruler_x,py+10,11)
+end
+
 function draw_star()
 	circfill(cx,cy,star_radius,8)
 end
