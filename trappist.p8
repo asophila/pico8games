@@ -26,7 +26,8 @@ offy=0.07
 star_radius=5
 bright=100
 bright_log={}
-
+ruler_offset=14
+ruler_gap=0
 pause=false
 
 function _init()
@@ -36,38 +37,67 @@ function _init()
   end
 end
 
-function _update()
- if not pause then
-   rtc=rtc+1
-   log_bright(get_brightness())
+function update_pause()
+ if btnp(1) then
+   ruler_offset+=1
+   if ruler_offset>100 then
+     ruler_offset=100
+   end
  end
- 
+ if btnp(0) then
+   ruler_offset-=1
+   if ruler_offset<14 then
+     ruler_offset=14
+   end
+ end
+ if btn(3) then
+   ruler_gap+=1
+   if ruler_offset+ruler_gap>100 then
+     ruler_gap-=1
+   end
+ end
+ if btn(2) then
+   ruler_gap-=1
+   if ruler_gap<0 then
+     ruler_gap=0
+   end
+ end
+end
+
+function update_telescope()
  if btnp(0) then
    speed+=1
    if speed>9 then
      speed=9
    end
  end
- 
  if btnp(1) then
    speed-=1
    if speed<1 then
      speed=1
    end
  end 
- 
  if btn(3) then
    offy+=0.1
    if offy>1 then 
    		offy=1
    end
  end
- 
  if btn(2) then
    offy-=0.1
    if offy<-1 then 
      offy=-1
    end
+ end
+end
+
+function _update()
+ if not pause then
+   rtc=rtc+1
+   log_bright(get_brightness())
+   update_telescope()
+ else
+   update_pause()
  end
  
  if btnp(5) then
@@ -118,7 +148,12 @@ end
 
 function draw_ruler()
   local py=10
-  line(ruler_x,py+3,ruler_x,py+10,11)
+  local off=0
+  line(ruler_offset,py+3,ruler_offset,py+10,flr(rnd(2))+6)
+ -- while off<100 do
+--    line(ruler_x,py+3,ruler_x,py+10,11)
+ --   off+=1
+ -- end
 end
 
 function draw_star()
@@ -171,6 +206,9 @@ draw_star()
     draw_planet(k,v.dist,1)
   end
   draw_bright_log()
+  if pause then
+    draw_ruler()
+  end
 end	
 
 
